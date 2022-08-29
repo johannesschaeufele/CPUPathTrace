@@ -1,0 +1,14 @@
+*.gitattributes text eol=lf
+*.gitignore text eol=lf
+
+*.txt text eol=lf
+*.md text eol=lf diff=markdown
+*.sh text eol=lf diff=bash
+*.cmake.in text eol=lf
+*.clang-format text eol=lf
+*.clang-tidy text eol=lf
+*.obj text eol=lf
+*.h text eol=lf diff=cpp linguist-language=C++
+*.cpp text eol=lf diff=cpp
+
+*.png binary
