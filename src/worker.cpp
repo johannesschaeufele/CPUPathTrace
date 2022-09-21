@@ -354,9 +354,6 @@ void doWork(std::queue<WorkItem> &queue, Image<> &output_image, RandomEngine re,
         {
             std::lock_guard<std::mutex> lock(mutex_callback);
 
-            // Atomics are not strictly required here, due to lock being acquired
-            // The lock should still be acquired here nonetheless, to prevent subsequent progress values from decreasing
-            //  and to ensure the callback is never called from more than one thread at a time
             int previous_progress = processed_tiles.fetch_add(1, std::memory_order_relaxed);
 
             progress_callback(previous_progress + 1);

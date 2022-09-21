@@ -17,6 +17,7 @@
 #include <sstream>
 #include <iostream>
 #include <exception>
+#include <atomic>
 
 int main(int argc, char *argv[]) {
     std::filesystem::path output_path = "out.png";
@@ -207,7 +208,7 @@ int main(int argc, char *argv[]) {
 
     FrameRenderJob job{camera, scene, options};
 
-    volatile int last_line_length = 0;
+    std::atomic<int> last_line_length = 0;
     auto progress_callback = [&last_line_length](int completed_tiles, int total_tiles) {
         std::stringstream progress_stream;
         progress_stream << "Rendering progress: " << std::fixed << std::setprecision(2)
@@ -216,9 +217,10 @@ int main(int argc, char *argv[]) {
 
         std::string progress_string = progress_stream.str();
 
-        std::cout << "\r" << std::string(last_line_length, ' ') << "\r" << progress_string << std::flush;
+        int space_count = last_line_length.load(std::memory_order_relaxed);
+        last_line_length.store(static_cast<int>(progress_string.length()), std::memory_order_relaxed);
 
-        last_line_length = static_cast<int>(progress_string.length());
+        std::cout << "\r" << std::string(space_count, ' ') << "\r" << progress_string << std::flush;
     };
 
     auto output_image = processJob(job, progress_callback);
